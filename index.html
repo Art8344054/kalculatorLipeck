@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Калькулятор FLEX</title>
+	<style>
+		.gradient-button {
+			background: linear-gradient(45deg, #ff6b6b, #f7e86b);
+			border: none;
+			border-radius: 25px;
+			color: white;
+			padding: 15px 30px;
+			font-size: 16px;
+			cursor: pointer;
+			transform: translateY(-3px);
+			box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+
+
+		}
+
+		.gradient-button:active {
+			transform: translateY(1px);
+			box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+		}
+
+		.content {
+			box-sizing: border-box;
+			max-width: 800rem;
+			text-align: center;
+			display: grid;
+			place-items: center;
+
+		}
+
+
+		/* h3 {
+			text-align: center;
+		} */
+
+		input {
+			padding: 0.2rem 1rem;
+			font-size: 1.2rem;
+
+		}
+
+		/* .out {
+			font-size: 12px;
+		}
+
+		.out1 {
+			font-size: 12px;
+		} */
+
+		.out2,
+		.out3,
+		.out4 {
+			height: auto;
+			padding: 0.2rem 1rem;
+			margin: 10px auto;
+			font-size: 1.2rem;
+			border: 1px solid #131314;
+			width: min-content;
+			text-align: center;
+			border-radius: 2px;
+
+		}
+
+		.perevodBrokeru,
+		.transport {
+			border: 2px solid black;
+			border-radius: 5px;
+			margin: 5px;
+			padding: 5px;
+		}
+	</style>
+
+</head>
+
+<body>
+
+	<div class="content">
+		<div class="out">
+			<p> Курс Центрального Банка</p>
+			<p class="out1"></p>
+			<p>руб. за 1 долллар </p>
+		</div>
+		<div class="perevodBrokeru">
+			<h2>Перевод брокеру через FLEX</h2>
+			<h3>Введите сумму в долларах, которую нужно перевести брокеру:</h3>
+			<input type="text" id="input" name="name" required size="6">
+			<h3>Итого брокеру нужно перевести рублей:</h3>
+			<div class="out2"></div>
+			<button id="btn1" class="gradient-button">Рассчитать</button>
+		</div>
+		<div class="transport">
+			<h2>Оплата за транспорт</h2>
+			<h3>Введите сумму в долларах:</h3>
+			<input type="text" id="input2" name="name" required size="6">
+			<h3>Итого транспортной нужно перевести рублей:</h3>
+			<div class="out3">0.00</div>
+			<button id="btn2" class="gradient-button">Рассчитать</button>
+		</div>
+		<div class="transport">
+			<h2>Расчет стоимости Эквадорского цветка</h2>
+			<p>Тариф 7,75$ за кг + 10$ авианакладная</p>
+			<div>
+				<h3>Введите количество КГ цветов</h3>
+				<input type="text" id="input3" name="name" required size="6">
+			</div>
+			<h3>Итого начисленно за транспорт в ДОЛЛАРАХ</h3>
+			<div class="out4">0.00</div>
+			<button id="btn3" class="gradient-button">Рассчитать</button>
+		</div>
+	</div>
+	</div>
+
+	<script>
+
+		let out = document.querySelector('.out')
+		let out1 = document.querySelector('.out1')
+		let out2 = document.querySelector('.out2')
+		let out3 = document.querySelector('.out3')
+		let out4 = document.querySelector('.out4')
+		let btn = document.querySelector('#btn1')
+		let btn2 = document.querySelector('#btn2')
+		let btn3 = document.querySelector('#btn3')
+		let inp = document.querySelector('#input')
+		let inp2 = document.querySelector('#input2')
+		let inp3 = document.querySelector('#input3')
+
+
+		const now = new Date();
+		let kursDay = now.toLocaleDateString("ru-RU");
+		out.insertAdjacentText('beforeBegin', kursDay);
+
+
+		let curentKursCB = async function currentCurs() {
+			let kursPromise = await fetch('https://iss.moex.com/iss/statistics/engines/currency/markets/selt/rates.json?iss.meta=off');
+
+			let kursPromiseJson = await kursPromise.json()
+
+			let kursString = await kursPromiseJson.cbrf.data[0][kursPromiseJson.cbrf.columns.indexOf('CBRF_USD_LAST')];
+
+			out1.textContent = kursString;
+
+			broker(kursString)
+			transport(kursString)
+
+		}
+
+		curentKursCB()
+
+		function broker(kursString) {
+			let inpValue = inp.value
+			let perevodBrokeru1 = (kursString + 3.5) * inpValue;
+			let perevodBrokeru2 = ((perevodBrokeru1 * 6.5 / 100) + perevodBrokeru1 + 30);
+			out2.textContent = perevodBrokeru2.toFixed(2);
+		}
+
+
+		function transport(kursString) {
+			let inpValue2 = inp2.value
+			let perevodTransportoi = ((kursString + (kursString * 4 / 100)) * inpValue2) + 2750
+			out3.textContent = perevodTransportoi.toFixed(2);
+		}
+
+
+		function ecuador() {
+			let inpValue3 = inp3.value
+			let raschetEcuador = (inpValue3 * 7.9 + 10)
+			out4.textContent = raschetEcuador.toFixed(2);
+		}
+
+
+		btn.addEventListener('click', function () { curentKursCB() })
+		btn2.addEventListener('click', function () { curentKursCB() })
+		btn3.addEventListener('click', ecuador)
+
+	</script>
+</body>
+
+</html>
