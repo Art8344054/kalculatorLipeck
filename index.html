@@ -296,7 +296,8 @@
 			let perevodBrokeru1 = (kursString + 4) * inpValue;
 			let perevodBrokeru2 = ((perevodBrokeru1 * 6.5 / 100) + perevodBrokeru1 + (30*(kursString + 4)));
 			let perevodBrokeru3 = Math.ceil(perevodBrokeru2 / 10) * 10;
-			out2.textContent = perevodBrokeru3.toFixed(2);
+			let perevodBrokeru4 = perevodBrokeru3.toLocaleString('ru-RU');
+			out2.textContent = perevodBrokeru4.toFixed(2);
 		}
 
 
